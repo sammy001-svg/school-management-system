@@ -212,21 +212,24 @@ class AdminPlanController extends Controller {
 
     public function store(): void {
         $this->requireSuperAdmin();
-        $this->db->insert("INSERT INTO plans (name,description,max_students,max_teachers,price_monthly,price_yearly,billing_owner) VALUES (?,?,?,?,?,?,?)",
-            [$_POST['name'],$_POST['description']??'',(int)$_POST['max_students'],(int)$_POST['max_teachers'],(float)$_POST['price_monthly'],(float)$_POST['price_yearly'],$_POST['billing_owner']??'platform']);
+        $features = json_encode($_POST['features'] ?? []);
+        $this->db->insert("INSERT INTO plans (name,description,max_students,max_teachers,price_monthly,price_yearly,billing_owner,features) VALUES (?,?,?,?,?,?,?,?)",
+            [$_POST['name'],$_POST['description']??'',(int)$_POST['max_students'],(int)$_POST['max_teachers'],(float)$_POST['price_monthly'],(float)$_POST['price_yearly'],$_POST['billing_owner']??'platform',$features]);
         $this->flash('success','Plan created.'); $this->redirect('/admin/plans');
     }
 
     public function edit(string $id): void {
         $this->requireSuperAdmin();
         $plan = $this->db->fetchOne("SELECT * FROM plans WHERE id=?", [$id]);
+        $plan['features'] = json_decode($plan['features'] ?? '[]', true);
         $this->view('super_admin/plans/form', ['pageTitle'=>'Edit Plan','panelType'=>'admin','plan'=>$plan,'flash'=>$this->getFlash()]);
     }
 
     public function update(string $id): void {
         $this->requireSuperAdmin();
-        $this->db->execute("UPDATE plans SET name=?,description=?,max_students=?,max_teachers=?,price_monthly=?,price_yearly=?,billing_owner=? WHERE id=?",
-            [$_POST['name'],$_POST['description']??'',(int)$_POST['max_students'],(int)$_POST['max_teachers'],(float)$_POST['price_monthly'],(float)$_POST['price_yearly'],$_POST['billing_owner']??'platform',$id]);
+        $features = json_encode($_POST['features'] ?? []);
+        $this->db->execute("UPDATE plans SET name=?,description=?,max_students=?,max_teachers=?,price_monthly=?,price_yearly=?,billing_owner=?,features=? WHERE id=?",
+            [$_POST['name'],$_POST['description']??'',(int)$_POST['max_students'],(int)$_POST['max_teachers'],(float)$_POST['price_monthly'],(float)$_POST['price_yearly'],$_POST['billing_owner']??'platform',$features,$id]);
         $this->flash('success','Plan updated.'); $this->redirect('/admin/plans');
     }
 }
@@ -243,10 +246,12 @@ class ResellerDashboardController extends Controller {
     public function index(): void {
         $this->requireReseller();
         $rid = $_SESSION['reseller_id'] ?? 0;
+        $reseller = $this->db->fetchOne("SELECT * FROM resellers WHERE id=?", [$rid]);
         $stats = [
             'schools'  => $this->db->fetchOne("SELECT COUNT(*) AS c FROM tenants WHERE reseller_id=?",[$rid])['c']??0,
             'students' => $this->db->fetchOne("SELECT COUNT(*) AS c FROM students s JOIN tenants t ON s.tenant_id=t.id WHERE t.reseller_id=?",[$rid])['c']??0,
             'revenue'  => $this->db->fetchOne("SELECT COALESCE(SUM(amount_paid),0) AS c FROM subscriptions WHERE reseller_id=?",[$rid])['c']??0,
+            'max_schools' => $reseller['max_schools'] ?? 0
         ];
         $schools = $this->db->fetchAll("SELECT t.*, p.name AS plan_name FROM tenants t LEFT JOIN plans p ON t.plan_id=p.id WHERE t.reseller_id=? ORDER BY t.created_at DESC LIMIT 10",[$rid]);
         $this->view('reseller/dashboard', ['pageTitle'=>'Reseller Dashboard','panelType'=>'reseller','stats'=>$stats,'schools'=>$schools,'flash'=>$this->getFlash()]);
@@ -270,6 +275,16 @@ class ResellerSchoolController extends Controller {
     public function store(): void {
         $this->requireReseller();
         $rid  = $_SESSION['reseller_id'] ?? 0;
+        
+        // Check reseller limit
+        $reseller = $this->db->fetchOne("SELECT max_schools FROM resellers WHERE id=?", [$rid]);
+        $current  = $this->db->fetchOne("SELECT COUNT(*) AS c FROM tenants WHERE reseller_id=?", [$rid])['c'];
+        
+        if ($current >= ($reseller['max_schools'] ?? 0)) {
+            $this->flash('error', 'You have reached your limit of ' . $reseller['max_schools'] . ' schools. Please contact admin to upgrade.');
+            $this->redirect('/reseller/schools');
+        }
+
         $name = trim($_POST['name'] ?? '');
         $slug = strtolower(preg_replace('/[^a-z0-9]+/i','-',$name)).'-'.time();
         $this->db->insert("INSERT INTO tenants (reseller_id,plan_id,institution_type,name,slug,email,phone,country,status) VALUES (?,?,?,?,?,?,?,?,?)",

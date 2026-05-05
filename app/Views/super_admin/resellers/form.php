@@ -49,6 +49,10 @@
           <input type="number" name="commission_rate" class="form-control" step="0.01" min="0" max="100" value="<?= $reseller['commission_rate']??0 ?>">
         </div>
         <div class="form-group">
+          <label class="form-label">Max Schools Allowed</label>
+          <input type="number" name="max_schools" class="form-control" min="1" value="<?= $reseller['max_schools']??5 ?>">
+        </div>
+        <div class="form-group">
           <label class="form-label">Status</label>
           <select name="status" class="form-control">
             <?php foreach(['pending','active','suspended'] as $s): ?>

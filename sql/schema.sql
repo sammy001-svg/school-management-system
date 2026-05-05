@@ -24,6 +24,7 @@ CREATE TABLE resellers (
     address TEXT DEFAULT NULL,
     status ENUM('active','suspended','pending') DEFAULT 'pending',
     commission_rate DECIMAL(5,2) DEFAULT 0.00,
+    max_schools INT DEFAULT 5,
     notes TEXT DEFAULT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

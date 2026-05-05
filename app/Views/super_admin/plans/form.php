@@ -61,6 +61,32 @@
     </div>
   </div>
 
+  <div class="card mt-16">
+    <div class="card-header"><div class="card-title">Feature Limits</div></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap:15px;">
+        <?php 
+          $availableFeatures = [
+            'attendance' => 'Attendance Management',
+            'exams'      => 'Exams & Grading',
+            'finance'    => 'Finance & Invoicing',
+            'messaging'  => 'Messaging & Announcements',
+            'library'    => 'Library & Materials',
+            'hr'         => 'HR & Payroll',
+            'inventory'  => 'Inventory Management'
+          ];
+          foreach($availableFeatures as $key => $label): 
+            $checked = in_array($key, $plan['features'] ?? []) ? 'checked' : '';
+        ?>
+        <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+          <input type="checkbox" name="features[]" value="<?= $key ?>" <?= $checked ?>>
+          <span><?= $label ?></span>
+        </label>
+        <?php endforeach; ?>
+      </div>
+    </div>
+  </div>
+
   <div style="display:flex;gap:12px;margin-top:20px;">
     <button type="submit" class="btn btn-primary"><?= $plan ? 'Update Plan' : 'Save Plan' ?></button>
     <a href="<?= $cfg['url'] ?>/admin/plans" class="btn btn-secondary">Cancel</a>

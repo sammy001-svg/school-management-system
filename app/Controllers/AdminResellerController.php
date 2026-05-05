@@ -32,13 +32,14 @@ class AdminResellerController extends Controller {
         $slug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', $name));
         
         // 1. Create the reseller
-        $resellerId = $this->db->insert("INSERT INTO resellers (name, slug, email, phone, domain, primary_color, secondary_color, status, commission_rate) VALUES (?,?,?,?,?,?,?,?,?)", [
+        $resellerId = $this->db->insert("INSERT INTO resellers (name, slug, email, phone, domain, primary_color, secondary_color, status, commission_rate, max_schools) VALUES (?,?,?,?,?,?,?,?,?,?)", [
             $name, $slug, $email, trim($_POST['phone'] ?? ''),
             trim($_POST['domain'] ?? '') ?: null,
             $_POST['primary_color'] ?? '#4F46E5',
             $_POST['secondary_color'] ?? '#7C3AED',
             $_POST['status'] ?? 'pending',
-            $_POST['commission_rate'] ?? 0
+            $_POST['commission_rate'] ?? 0,
+            (int)($_POST['max_schools'] ?? 5)
         ]);
 
         // 2. Create the Reseller Owner user (Role ID 2)
@@ -67,10 +68,10 @@ class AdminResellerController extends Controller {
 
     public function update(string $id): void {
         $this->requireSuperAdmin();
-        $this->db->execute("UPDATE resellers SET name=?,email=?,phone=?,domain=?,primary_color=?,secondary_color=?,status=?,commission_rate=? WHERE id=?", [
+        $this->db->execute("UPDATE resellers SET name=?,email=?,phone=?,domain=?,primary_color=?,secondary_color=?,status=?,commission_rate=?,max_schools=? WHERE id=?", [
             $_POST['name'],trim($_POST['email']),trim($_POST['phone']??''),trim($_POST['domain']??'')?:null,
             $_POST['primary_color']??'#4F46E5',$_POST['secondary_color']??'#7C3AED',
-            $_POST['status']??'pending',$_POST['commission_rate']??0,$id
+            $_POST['status']??'pending',$_POST['commission_rate']??0,(int)($_POST['max_schools']??5),$id
         ]);
         $this->flash('success','Reseller updated.'); $this->redirect('/admin/resellers');
     }
