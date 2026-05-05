@@ -36,6 +36,13 @@
           <div class="form-hint">Leave blank to use the default platform domain</div>
         </div>
       </div>
+      <?php if (!$reseller): ?>
+      <div class="form-group">
+        <label class="form-label">Owner Password *</label>
+        <input type="password" name="password" class="form-control" placeholder="Set password for reseller owner" required>
+        <small style="color:#666;">This password will be used for the first login.</small>
+      </div>
+      <?php endif; ?>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Commission Rate (%)</label>

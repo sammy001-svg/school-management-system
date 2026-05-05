@@ -27,14 +27,21 @@
       </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Email</label>
-          <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($school['email']??'') ?>">
+          <label class="form-label">Email *</label>
+          <input type="email" name="email" class="form-control" value="<?= htmlspecialchars($school['email']??'') ?>" required>
         </div>
         <div class="form-group">
           <label class="form-label">Phone</label>
           <input type="text" name="phone" class="form-control" value="<?= htmlspecialchars($school['phone']??'') ?>">
         </div>
       </div>
+      <?php if (!$school): ?>
+      <div class="form-group">
+        <label class="form-label">Admin Password *</label>
+        <input type="password" name="password" class="form-control" placeholder="Set password for school admin" required>
+        <small style="color:#666;">This password will be used for the first login.</small>
+      </div>
+      <?php endif; ?>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Country</label>

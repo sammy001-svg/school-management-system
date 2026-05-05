@@ -8,6 +8,12 @@ $router->get('/login',    ['AuthController', 'loginPage']);
 $router->post('/login',   ['AuthController', 'loginPost']);
 $router->get('/logout',   ['AuthController', 'logout']);
 
+// Registration
+$router->get('/register/school',    ['RegistrationController', 'schoolPage']);
+$router->post('/register/school',   ['RegistrationController', 'registerSchool']);
+$router->get('/register/reseller',  ['RegistrationController', 'resellerPage']);
+$router->post('/register/reseller', ['RegistrationController', 'registerReseller']);
+
 // ── SUPER ADMIN ──────────────────────────────────────────────
 $router->get('/admin',                      ['AdminDashboardController', 'index']);
 $router->get('/admin/dashboard',            ['AdminDashboardController', 'index']);

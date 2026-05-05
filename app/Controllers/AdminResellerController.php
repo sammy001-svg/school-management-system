@@ -20,20 +20,34 @@ class AdminResellerController extends Controller {
 
     public function store(): void {
         $this->requireSuperAdmin();
-        $data = [
-            'name'   => trim($_POST['name'] ?? ''),
-            'slug'   => strtolower(preg_replace('/[^a-z0-9]+/i','-', trim($_POST['name'] ?? ''))),
-            'email'  => trim($_POST['email'] ?? ''),
-            'phone'  => trim($_POST['phone'] ?? ''),
-            'domain' => trim($_POST['domain'] ?? '') ?: null,
-            'primary_color'   => $_POST['primary_color']   ?? '#4F46E5',
-            'secondary_color' => $_POST['secondary_color'] ?? '#7C3AED',
-            'status' => $_POST['status'] ?? 'pending',
-            'commission_rate' => $_POST['commission_rate'] ?? 0,
-        ];
-        if (!$data['name'] || !$data['email']) { $this->flash('error','Name and email are required.'); $this->redirect('/admin/resellers/create'); }
-        $this->db->insert("INSERT INTO resellers (name,slug,email,phone,domain,primary_color,secondary_color,status,commission_rate) VALUES (?,?,?,?,?,?,?,?,?)", array_values($data));
-        $this->flash('success','Reseller created successfully.');
+        $name     = trim($_POST['name'] ?? '');
+        $email    = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+
+        if (!$name || !$email || !$password) {
+            $this->flash('error', 'Name, email, and password are required.');
+            $this->redirect('/admin/resellers/create');
+        }
+
+        $slug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', $name));
+        
+        // 1. Create the reseller
+        $resellerId = $this->db->insert("INSERT INTO resellers (name, slug, email, phone, domain, primary_color, secondary_color, status, commission_rate) VALUES (?,?,?,?,?,?,?,?,?)", [
+            $name, $slug, $email, trim($_POST['phone'] ?? ''),
+            trim($_POST['domain'] ?? '') ?: null,
+            $_POST['primary_color'] ?? '#4F46E5',
+            $_POST['secondary_color'] ?? '#7C3AED',
+            $_POST['status'] ?? 'pending',
+            $_POST['commission_rate'] ?? 0
+        ]);
+
+        // 2. Create the Reseller Owner user (Role ID 2)
+        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+        $this->db->insert("INSERT INTO users (reseller_id, role_id, name, email, password_hash, status) VALUES (?, ?, ?, ?, ?, ?)", [
+            $resellerId, 2, $name . ' Owner', $email, $passwordHash, 'active'
+        ]);
+
+        $this->flash('success', 'Reseller and Owner user created successfully.');
         $this->redirect('/admin/resellers');
     }
 

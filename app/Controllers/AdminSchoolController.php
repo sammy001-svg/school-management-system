@@ -26,15 +26,33 @@ class AdminSchoolController extends Controller {
 
     public function store(): void {
         $this->requireSuperAdmin();
-        $name = trim($_POST['name'] ?? '');
-        $slug = strtolower(preg_replace('/[^a-z0-9]+/i','-',$name)).'-'.time();
-        $this->db->insert("INSERT INTO tenants (reseller_id,plan_id,institution_type,name,slug,email,phone,address,country,status,trial_ends_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)", [
-            $_POST['reseller_id']?:null, $_POST['plan_id']?:null, $_POST['institution_type'],
-            $name, $slug, trim($_POST['email']??''), trim($_POST['phone']??''),
-            trim($_POST['address']??''), trim($_POST['country']??''),
-            $_POST['status']??'pending', $_POST['trial_ends_at']?:null
+        $name     = trim($_POST['name'] ?? '');
+        $email    = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+        
+        if (!$name || !$email || !$password) {
+            $this->flash('error', 'Name, email, and password are required.');
+            $this->redirect('/admin/schools/create');
+        }
+
+        $slug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', $name)) . '-' . time();
+        
+        // 1. Create the tenant (school)
+        $tenantId = $this->db->insert("INSERT INTO tenants (reseller_id, plan_id, institution_type, name, slug, email, phone, address, country, status, trial_ends_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)", [
+            $_POST['reseller_id'] ?: null, $_POST['plan_id'] ?: null, $_POST['institution_type'],
+            $name, $slug, $email, trim($_POST['phone'] ?? ''),
+            trim($_POST['address'] ?? ''), trim($_POST['country'] ?? ''),
+            $_POST['status'] ?? 'pending', $_POST['trial_ends_at'] ?: null
         ]);
-        $this->flash('success','School created.'); $this->redirect('/admin/schools');
+
+        // 2. Create the School Admin user (Role ID 4)
+        $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+        $this->db->insert("INSERT INTO users (tenant_id, role_id, name, email, password_hash, status) VALUES (?, ?, ?, ?, ?, ?)", [
+            $tenantId, 4, $name . ' Admin', $email, $passwordHash, 'active'
+        ]);
+
+        $this->flash('success', 'School and Admin user created successfully.');
+        $this->redirect('/admin/schools');
     }
 
     public function show(string $id): void {
