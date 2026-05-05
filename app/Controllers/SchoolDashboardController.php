@@ -28,26 +28,53 @@ class SchoolDashboardController extends Controller {
              WHERE a.tenant_id=? ORDER BY a.published_at DESC LIMIT 3", [$tid]
         );
 
-        // Chart Data - Attendance (Mocked for last 6 days for the line chart)
-        $attendance_history = [
-            'Mon' => rand(70, 95), 'Tue' => rand(70, 95), 'Wed' => rand(70, 95),
-            'Thu' => rand(70, 95), 'Fri' => rand(70, 95), 'Sat' => rand(70, 95)
-        ];
+        // Chart Data - Attendance
+        $att_records = $this->db->fetchAll("SELECT date, 
+            COUNT(*) as total_marked, 
+            SUM(CASE WHEN status='present' THEN 1 ELSE 0 END) as total_present 
+            FROM attendance 
+            WHERE tenant_id=? AND date >= DATE_SUB(CURDATE(), INTERVAL 5 DAY)
+            GROUP BY date ORDER BY date ASC", [$tid]);
+            
+        $attendance_history = [];
+        for($i=5; $i>=0; $i--) {
+            $dayName = date('D', strtotime("-$i days"));
+            $attendance_history[$dayName] = 0;
+        }
+
+        foreach($att_records as $rec) {
+            $dayName = date('D', strtotime($rec['date']));
+            $pct = $rec['total_marked'] > 0 ? round(($rec['total_present'] / $rec['total_marked']) * 100) : 0;
+            if (isset($attendance_history[$dayName])) {
+                $attendance_history[$dayName] = $pct;
+            }
+        }
 
         // Chart Data - Fees
-        // Normally we'd query invoices table. Let's provide some realistic dummy data to match the image UI.
+        $feesData = $this->db->fetchOne("SELECT 
+            COALESCE(SUM(amount_paid), 0) as collected,
+            COALESCE(SUM(CASE WHEN status IN ('unpaid','partial') THEN amount_due - amount_paid - discount ELSE 0 END), 0) as pending,
+            COALESCE(SUM(CASE WHEN status = 'overdue' THEN amount_due - amount_paid - discount ELSE 0 END), 0) as overdue
+            FROM invoices WHERE tenant_id=?", [$tid]);
+
         $fees = [
-            'collected' => 875000,
-            'pending' => 300000,
-            'overdue' => 70000
+            'collected' => $feesData['collected'],
+            'pending' => $feesData['pending'],
+            'overdue' => $feesData['overdue']
         ];
 
         // Chart Data - Exams
+        $examsData = $this->db->fetchOne("SELECT 
+            COUNT(CASE WHEN exam_date > CURDATE() THEN 1 END) as upcoming,
+            COUNT(CASE WHEN exam_date = CURDATE() THEN 1 END) as in_progress,
+            COUNT(CASE WHEN exam_date < CURDATE() THEN 1 END) as completed
+            FROM exams WHERE tenant_id=?", [$tid]);
+
         $exams = [
-            'upcoming' => 18,
-            'in_progress' => 12,
-            'completed' => 8,
-            'cancelled' => 4
+            'upcoming' => $examsData['upcoming'],
+            'in_progress' => $examsData['in_progress'],
+            'completed' => $examsData['completed'],
+            'cancelled' => 0
         ];
 
         $view = ($tenant['institution_type'] === 'university') 
