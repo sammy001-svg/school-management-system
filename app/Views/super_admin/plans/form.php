@@ -40,11 +40,11 @@
     <div class="card-body">
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">Monthly Price ($)</label>
+          <label class="form-label">Monthly Price (Ksh)</label>
           <input type="number" name="price_monthly" class="form-control" step="0.01" value="<?= $plan['price_monthly']??0 ?>" required>
         </div>
         <div class="form-group">
-          <label class="form-label">Yearly Price ($)</label>
+          <label class="form-label">Yearly Price (Ksh)</label>
           <input type="number" name="price_yearly" class="form-control" step="0.01" value="<?= $plan['price_yearly']??0 ?>" required>
         </div>
       </div>

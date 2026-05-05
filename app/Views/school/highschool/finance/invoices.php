@@ -16,8 +16,8 @@
           <td style="font-family:monospace;font-size:12px"><?= htmlspecialchars($inv['invoice_no']) ?></td>
           <td class="fw-600"><?= htmlspecialchars($inv['student_name']) ?></td>
           <td><?= htmlspecialchars($inv['class_name']??'—') ?></td>
-          <td>$<?= number_format($inv['amount_due'],2) ?></td>
-          <td class="text-success">$<?= number_format($inv['amount_paid'],2) ?></td>
+          <td><?= htmlspecialchars($tenant['currency'] ?? 'Ksh') ?><?= number_format($inv['amount_due'],2) ?></td>
+          <td class="text-success"><?= htmlspecialchars($tenant['currency'] ?? 'Ksh') ?><?= number_format($inv['amount_paid'],2) ?></td>
           <td style="font-size:12px;color:var(--text-muted)"><?= $inv['due_date']?date('M d, Y',strtotime($inv['due_date'])):'—' ?></td>
           <td><span class="badge badge-<?= $inv['status']==='paid'?'success':($inv['status']==='overdue'?'danger':'warning') ?>"><?= ucfirst($inv['status']) ?></span></td>
         </tr>

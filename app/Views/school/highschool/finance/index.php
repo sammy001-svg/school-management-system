@@ -4,8 +4,8 @@
   <a href="<?= $cfg['url'] ?>/school/finance/invoices/create" class="btn btn-primary">+ Create Invoice</a>
 </div>
 <div class="stat-grid" style="grid-template-columns:repeat(4,1fr);">
-  <div class="stat-card" style="--card-color:var(--primary)"><div class="stat-value">$<?= number_format($stats['total_due'],2) ?></div><div class="stat-label">Total Billed</div></div>
-  <div class="stat-card" style="--card-color:var(--success)"><div class="stat-value">$<?= number_format($stats['total_paid'],2) ?></div><div class="stat-label">Total Collected</div></div>
+  <div class="stat-card" style="--card-color:var(--primary)"><div class="stat-value"><?= htmlspecialchars($tenant['currency'] ?? 'Ksh') ?><?= number_format($stats['total_due'],2) ?></div><div class="stat-label">Total Billed</div></div>
+  <div class="stat-card" style="--card-color:var(--success)"><div class="stat-value"><?= htmlspecialchars($tenant['currency'] ?? 'Ksh') ?><?= number_format($stats['total_paid'],2) ?></div><div class="stat-label">Total Collected</div></div>
   <div class="stat-card" style="--card-color:var(--danger)"><div class="stat-value"><?= $stats['unpaid'] ?></div><div class="stat-label">Unpaid Invoices</div></div>
   <div class="stat-card" style="--card-color:var(--success)"><div class="stat-value"><?= $stats['paid'] ?></div><div class="stat-label">Paid Invoices</div></div>
 </div>
@@ -23,7 +23,7 @@
         <tr>
           <td class="fw-600"><?= htmlspecialchars($p['student_name']) ?></td>
           <td style="font-family:monospace;font-size:12px"><?= htmlspecialchars($p['invoice_no']) ?></td>
-          <td class="text-success fw-600">$<?= number_format($p['amount'],2) ?></td>
+          <td class="text-success fw-600"><?= htmlspecialchars($tenant['currency'] ?? 'Ksh') ?><?= number_format($p['amount'],2) ?></td>
           <td><?= ucfirst($p['method']) ?></td>
           <td style="font-size:12px"><?= htmlspecialchars($p['reference']??'—') ?></td>
           <td style="font-size:12px;color:var(--text-muted)"><?= date('M d, Y', strtotime($p['paid_at'])) ?></td>

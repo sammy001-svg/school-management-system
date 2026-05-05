@@ -36,8 +36,8 @@
               <?= ucfirst($p['billing_owner']) ?>
             </span>
           </td>
-          <td>$<?= number_format($p['price_monthly'], 2) ?></td>
-          <td>$<?= number_format($p['price_yearly'], 2) ?></td>
+          <td>Ksh <?= number_format($p['price_monthly'], 2) ?></td>
+          <td>Ksh <?= number_format($p['price_yearly'], 2) ?></td>
           <td>
             <div style="font-size:12px;">
               Students: <strong><?= $p['max_students'] ?></strong><br>

@@ -14,7 +14,8 @@ class FinanceController extends Controller {
             'paid'       => $this->db->fetchOne("SELECT COUNT(*) AS c FROM invoices WHERE tenant_id=? AND status='paid'",[$this->tid])['c']??0,
         ];
         $recentPayments = $this->db->fetchAll("SELECT p.*, i.invoice_no, u.name AS student_name FROM payments p JOIN invoices i ON p.invoice_id=i.id JOIN students s ON i.student_id=s.id JOIN users u ON s.user_id=u.id WHERE p.tenant_id=? ORDER BY p.paid_at DESC LIMIT 10",[$this->tid]);
-        $this->view('school/highschool/finance/index', ['pageTitle'=>'Finance','panelType'=>'school','stats'=>$stats,'recentPayments'=>$recentPayments,'flash'=>$this->getFlash()]);
+        $tenant = $this->db->fetchOne("SELECT * FROM tenants WHERE id=?", [$this->tid]);
+        $this->view('school/highschool/finance/index', ['pageTitle'=>'Finance','panelType'=>'school','tenant'=>$tenant,'stats'=>$stats,'recentPayments'=>$recentPayments,'flash'=>$this->getFlash()]);
     }
 
     public function invoices(): void {
@@ -24,7 +25,8 @@ class FinanceController extends Controller {
         $where  = "i.tenant_id=?";
         if ($status) { $where .= " AND i.status=?"; $params[] = $status; }
         $invoices = $this->db->fetchAll("SELECT i.*, u.name AS student_name, c.name AS class_name FROM invoices i JOIN students s ON i.student_id=s.id JOIN users u ON s.user_id=u.id LEFT JOIN classes c ON s.class_id=c.id WHERE $where ORDER BY i.created_at DESC", $params);
-        $this->view('school/highschool/finance/invoices', ['pageTitle'=>'Invoices','panelType'=>'school','invoices'=>$invoices,'status'=>$status,'flash'=>$this->getFlash()]);
+        $tenant = $this->db->fetchOne("SELECT * FROM tenants WHERE id=?", [$this->tid]);
+        $this->view('school/highschool/finance/invoices', ['pageTitle'=>'Invoices','panelType'=>'school','tenant'=>$tenant,'invoices'=>$invoices,'status'=>$status,'flash'=>$this->getFlash()]);
     }
 
     public function createInvoice(): void {
@@ -45,7 +47,8 @@ class FinanceController extends Controller {
     public function payments(): void {
         $this->requireAuth(['School Admin','Accountant','Super Admin']);
         $payments = $this->db->fetchAll("SELECT p.*, i.invoice_no, u.name AS student_name FROM payments p JOIN invoices i ON p.invoice_id=i.id JOIN students s ON i.student_id=s.id JOIN users u ON s.user_id=u.id WHERE p.tenant_id=? ORDER BY p.paid_at DESC",[$this->tid]);
-        $this->view('school/highschool/finance/payments', ['pageTitle'=>'Payments','panelType'=>'school','payments'=>$payments,'flash'=>$this->getFlash()]);
+        $tenant = $this->db->fetchOne("SELECT * FROM tenants WHERE id=?", [$this->tid]);
+        $this->view('school/highschool/finance/payments', ['pageTitle'=>'Payments','panelType'=>'school','tenant'=>$tenant,'payments'=>$payments,'flash'=>$this->getFlash()]);
     }
 
     public function storePayment(): void {

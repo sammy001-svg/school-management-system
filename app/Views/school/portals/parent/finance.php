@@ -23,7 +23,7 @@
                     <td class="fw-600"><?= htmlspecialchars($i['student_name']) ?></td>
                     <td>#INV-<?= $i['id'] ?></td>
                     <td><?= htmlspecialchars($i['description']) ?></td>
-                    <td class="fw-700">$<?= number_format($i['amount'], 2) ?></td>
+                    <td class="fw-700"><?= htmlspecialchars($tenant['currency'] ?? 'Ksh') ?><?= number_format($i['amount'], 2) ?></td>
                     <td>
                         <?php 
                         $badge = $i['status'] === 'paid' ? 'badge-success' : ($i['status'] === 'partial' ? 'badge-warning' : 'badge-danger');

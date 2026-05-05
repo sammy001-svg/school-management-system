@@ -24,7 +24,7 @@
                     <td style="font-family:monospace;font-size:12px;"><?= htmlspecialchars($p['reference'] ?? '—') ?></td>
                     <td style="font-family:monospace;font-size:12px;"><?= htmlspecialchars($p['invoice_no'] ?? '—') ?></td>
                     <td class="fw-600"><?= htmlspecialchars($p['student_name'] ?? '—') ?></td>
-                    <td class="text-success fw-600">$<?= number_format($p['amount'], 2) ?></td>
+                    <td class="text-success fw-600"><?= htmlspecialchars($tenant['currency'] ?? 'Ksh') ?><?= number_format($p['amount'], 2) ?></td>
                     <td><span class="badge badge-info"><?= strtoupper($p['method'] ?? 'Manual') ?></span></td>
                     <td style="font-size:12px;"><?= date('M d, Y', strtotime($p['paid_at'])) ?></td>
                     <td><span class="badge badge-success">Completed</span></td>

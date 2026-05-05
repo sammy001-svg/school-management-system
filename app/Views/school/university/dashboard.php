@@ -226,7 +226,7 @@
     <div style="flex:1;position:relative;height:200px;display:flex;justify-content:center;align-items:center;">
       <canvas id="feeChart"></canvas>
       <div style="position:absolute;text-align:center;">
-        <div style="font-weight:800;font-size:16px;">₹ <?= number_format($fees['collected'] + $fees['pending'] + $fees['overdue']) ?></div>
+        <div style="font-weight:800;font-size:16px;"><?= htmlspecialchars($tenant['currency'] ?? 'Ksh') ?> <?= number_format($fees['collected'] + $fees['pending'] + $fees['overdue']) ?></div>
         <div style="font-size:10px;color:var(--text-muted);">Total Invoiced</div>
       </div>
     </div>

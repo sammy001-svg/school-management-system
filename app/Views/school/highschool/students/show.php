@@ -36,7 +36,7 @@
       <thead><tr><th>Invoice</th><th>Amount</th><th>Status</th></tr></thead>
       <tbody>
         <?php foreach($invoices as $inv): ?>
-        <tr><td style="font-family:monospace;font-size:12px"><?= htmlspecialchars($inv['invoice_no']) ?></td><td>$<?= number_format($inv['amount_due'],2) ?></td><td><span class="badge badge-<?= $inv['status']==='paid'?'success':($inv['status']==='overdue'?'danger':'warning') ?>"><?= ucfirst($inv['status']) ?></span></td></tr>
+        <tr><td style="font-family:monospace;font-size:12px"><?= htmlspecialchars($inv['invoice_no']) ?></td><td><?= htmlspecialchars($tenant['currency'] ?? 'Ksh') ?><?= number_format($inv['amount_due'],2) ?></td><td><span class="badge badge-<?= $inv['status']==='paid'?'success':($inv['status']==='overdue'?'danger':'warning') ?>"><?= ucfirst($inv['status']) ?></span></td></tr>
         <?php endforeach; ?>
         <?php if(empty($invoices)): ?><tr><td colspan="3" class="text-center text-muted" style="padding:20px">No invoices.</td></tr><?php endif; ?>
       </tbody>

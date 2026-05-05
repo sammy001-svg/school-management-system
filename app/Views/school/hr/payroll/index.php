@@ -26,10 +26,10 @@
                 <?php foreach($records as $r): ?>
                 <tr>
                     <td class="fw-600"><?= htmlspecialchars($r['staff_name']) ?></td>
-                    <td>$<?= number_format($r['basic_salary'], 2) ?></td>
-                    <td class="text-success">+$<?= number_format($r['allowances'], 2) ?></td>
-                    <td class="text-danger">-$<?= number_format($r['deductions'], 2) ?></td>
-                    <td class="fw-700">$<?= number_format($r['net_salary'], 2) ?></td>
+                    <td><?= htmlspecialchars($tenant['currency'] ?? 'Ksh') ?><?= number_format($r['basic_salary'], 2) ?></td>
+                    <td class="text-success">+<?= htmlspecialchars($tenant['currency'] ?? 'Ksh') ?><?= number_format($r['allowances'], 2) ?></td>
+                    <td class="text-danger">-<?= htmlspecialchars($tenant['currency'] ?? 'Ksh') ?><?= number_format($r['deductions'], 2) ?></td>
+                    <td class="fw-700"><?= htmlspecialchars($tenant['currency'] ?? 'Ksh') ?><?= number_format($r['net_salary'], 2) ?></td>
                     <td>
                         <span class="badge <?= $r['status'] === 'paid' ? 'badge-success' : 'badge-warning' ?>">
                             <?= strtoupper($r['status']) ?>
