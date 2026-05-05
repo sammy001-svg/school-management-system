@@ -16,33 +16,9 @@ function closeSidebar(){
 (function(){
   const path = window.location.pathname;
   document.querySelectorAll('.sidebar-nav a').forEach(a => {
-    if(path.startsWith(a.getAttribute('href'))) {
-      a.classList.add('active');
-      // If inside a dropdown, open it
-      const parentDropdown = a.closest('.sidebar-dropdown');
-      if(parentDropdown) parentDropdown.classList.add('active');
-    }
+    if(path.startsWith(a.getAttribute('href'))) a.classList.add('active');
   });
 })();
-
-function toggleDropdown(el) {
-  el.closest('.sidebar-dropdown').classList.toggle('active');
-}
-
-function openModal(id) {
-  document.getElementById(id).classList.add('open');
-}
-
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
-
-// Close modal on click outside
-window.onclick = function(event) {
-  if (event.target.classList.contains('modal')) {
-    event.target.classList.remove('open');
-  }
-}
 </script>
 </body>
 </html>
