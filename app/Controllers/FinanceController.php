@@ -51,6 +51,14 @@ class FinanceController extends Controller {
         $this->view('school/highschool/finance/payments', ['pageTitle'=>'Payments','panelType'=>'school','tenant'=>$tenant,'payments'=>$payments,'flash'=>$this->getFlash()]);
     }
 
+    public function receipt(int $id): void {
+        $this->requireAuth(['School Admin','Accountant','Super Admin','Parent','Student']);
+        $payment = $this->db->fetchOne("SELECT p.*, i.invoice_no, u.name AS student_name FROM payments p JOIN invoices i ON p.invoice_id=i.id JOIN students s ON i.student_id=s.id JOIN users u ON s.user_id=u.id WHERE p.id=? AND p.tenant_id=?", [$id, $this->tid]);
+        if (!$payment) { die("Receipt not found."); }
+        $tenant = $this->db->fetchOne("SELECT * FROM tenants WHERE id=?", [$this->tid]);
+        $this->view('school/highschool/finance/receipt', ['payment' => $payment, 'tenant' => $tenant]);
+    }
+
     public function storePayment(): void {
         $this->requireAuth(['School Admin','Accountant','Super Admin']);
         $invoiceId = $_POST['invoice_id'];
@@ -67,22 +75,115 @@ class FinanceController extends Controller {
     public function feeManagement(): void {
         $this->requireAuth(['School Admin','Accountant','Super Admin']);
         $categories = $this->db->fetchAll("SELECT * FROM fee_categories WHERE tenant_id=?", [$this->tid]);
-        $this->view('school/highschool/finance/fee_management', ['pageTitle'=>'Fee Management','panelType'=>'school','categories'=>$categories,'flash'=>$this->getFlash()]);
+        $structures = $this->db->fetchAll("SELECT * FROM fee_structures WHERE tenant_id=?", [$this->tid]);
+        $classes    = $this->db->fetchAll("SELECT id, name FROM classes WHERE tenant_id=?", [$this->tid]);
+        $this->view('school/highschool/finance/fee_management', [
+            'pageTitle' => 'Fee Management',
+            'panelType' => 'school',
+            'categories' => $categories,
+            'structures' => $structures,
+            'classes'    => $classes,
+            'flash'      => $this->getFlash()
+        ]);
+    }
+
+    public function storeCategory(): void {
+        $this->requireAuth(['School Admin','Accountant','Super Admin']);
+        $this->db->insert("INSERT INTO fee_categories (tenant_id, name, description) VALUES (?,?,?)",
+            [$this->tid, $_POST['name'], $_POST['description']??'']);
+        $this->flash('success','Fee category created.');
+        $this->redirect('/school/finance/fee-management');
+    }
+
+    public function storeStructure(): void {
+        $this->requireAuth(['School Admin','Accountant','Super Admin']);
+        $this->db->insert("INSERT INTO fee_structures (tenant_id, name, amount, frequency, description) VALUES (?,?,?,?,?)",
+            [$this->tid, $_POST['name'], $_POST['amount'], $_POST['frequency']??'termly', $_POST['description']??'']);
+        $this->flash('success','Fee structure created.');
+        $this->redirect('/school/finance/fee-management');
     }
 
     public function accountsReceivable(): void {
         $this->requireAuth(['School Admin','Accountant','Super Admin']);
-        $this->view('school/highschool/finance/accounts_receivable', ['pageTitle'=>'Accounts Receivable','panelType'=>'school','flash'=>$this->getFlash()]);
+        $tenant = $this->db->fetchOne("SELECT * FROM tenants WHERE id=?", [$this->tid]);
+        
+        // Aging Data
+        $aging = $this->db->fetchAll("
+            SELECT 
+                u.name AS student_name,
+                SUM(CASE WHEN DATEDIFF(CURDATE(), i.due_date) BETWEEN 1 AND 30 THEN (i.amount_due - i.amount_paid) ELSE 0 END) AS age_30,
+                SUM(CASE WHEN DATEDIFF(CURDATE(), i.due_date) BETWEEN 31 AND 60 THEN (i.amount_due - i.amount_paid) ELSE 0 END) AS age_60,
+                SUM(CASE WHEN DATEDIFF(CURDATE(), i.due_date) > 60 THEN (i.amount_due - i.amount_paid) ELSE 0 END) AS age_90,
+                SUM(i.amount_due - i.amount_paid) AS total_outstanding
+            FROM invoices i
+            JOIN students s ON i.student_id = s.id
+            JOIN users u ON s.user_id = u.id
+            WHERE i.tenant_id = ? AND i.status != 'paid' AND i.due_date < CURDATE()
+            GROUP BY i.student_id
+            ORDER BY total_outstanding DESC
+        ", [$this->tid]);
+
+        $stats = [
+            'total_outstanding' => $this->db->fetchOne("SELECT SUM(amount_due - amount_paid) AS c FROM invoices WHERE tenant_id=? AND status != 'paid'", [$this->tid])['c'] ?? 0,
+            'overdue_count'     => $this->db->fetchOne("SELECT COUNT(*) AS c FROM invoices WHERE tenant_id=? AND status != 'paid' AND due_date < CURDATE()", [$this->tid])['c'] ?? 0,
+        ];
+
+        $this->view('school/highschool/finance/accounts_receivable', [
+            'pageTitle' => 'Accounts Receivable',
+            'panelType' => 'school',
+            'tenant'    => $tenant,
+            'aging'     => $aging,
+            'stats'     => $stats,
+            'flash'     => $this->getFlash()
+        ]);
     }
 
     public function budgeting(): void {
         $this->requireAuth(['School Admin','Accountant','Super Admin']);
-        $this->view('school/highschool/finance/budgeting', ['pageTitle'=>'Budgeting & Planning','panelType'=>'school','flash'=>$this->getFlash()]);
+        $budgets = $this->db->fetchAll("SELECT b.*, ay.name AS academic_year FROM budgets b JOIN academic_years ay ON b.academic_year_id = ay.id WHERE b.tenant_id=?", [$this->tid]);
+        $academicYears = $this->db->fetchAll("SELECT id, name FROM academic_years WHERE tenant_id=?", [$this->tid]);
+        $budgetHeads   = $this->db->fetchAll("SELECT * FROM budget_heads WHERE tenant_id=?", [$this->tid]);
+        
+        $this->view('school/highschool/finance/budgeting', [
+            'pageTitle' => 'Budgeting & Planning',
+            'panelType' => 'school',
+            'budgets'   => $budgets,
+            'academicYears' => $academicYears,
+            'budgetHeads'   => $budgetHeads,
+            'flash'     => $this->getFlash()
+        ]);
+    }
+
+    public function storeBudget(): void {
+        $this->requireAuth(['School Admin','Accountant','Super Admin']);
+        $this->db->insert("INSERT INTO budgets (tenant_id, name, academic_year_id, status) VALUES (?,?,?,?)",
+            [$this->tid, $_POST['name'], $_POST['academic_year_id'], 'draft']);
+        $this->flash('success','Budget plan created.');
+        $this->redirect('/school/finance/budgeting');
+    }
+
+    public function storeBudgetHead(): void {
+        $this->requireAuth(['School Admin','Accountant','Super Admin']);
+        $this->db->insert("INSERT INTO budget_heads (tenant_id, name, type, code) VALUES (?,?,?,?)",
+            [$this->tid, $_POST['name'], $_POST['type'], $_POST['code']??'']);
+        $this->flash('success','Budget category created.');
+        $this->redirect('/school/finance/budgeting');
     }
 
     public function financialReports(): void {
         $this->requireAuth(['School Admin','Accountant','Super Admin']);
-        $this->view('school/highschool/finance/reports', ['pageTitle'=>'Financial Reporting','panelType'=>'school','flash'=>$this->getFlash()]);
+        
+        $income  = $this->db->fetchOne("SELECT COALESCE(SUM(amount),0) AS c FROM payments WHERE tenant_id=?", [$this->tid])['c'] ?? 0;
+        $payroll = $this->db->fetchOne("SELECT COALESCE(SUM(net_salary),0) AS c FROM payroll WHERE tenant_id=? AND status='paid'", [$this->tid])['c'] ?? 0;
+        
+        $stats = [
+            'total_income' => $income,
+            'total_expense' => $payroll, // Basic expense for now
+            'net_profit' => $income - $payroll
+        ];
+
+        $tenant = $this->db->fetchOne("SELECT * FROM tenants WHERE id=?", [$this->tid]);
+        $this->view('school/highschool/finance/reports', ['pageTitle'=>'Financial Reporting','panelType'=>'school','tenant'=>$tenant,'stats'=>$stats,'flash'=>$this->getFlash()]);
     }
 
     public function communication(): void {
