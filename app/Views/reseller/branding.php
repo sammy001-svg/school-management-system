@@ -5,9 +5,15 @@
   <div class="card">
     <div class="card-header"><div class="card-title">Brand Identity</div></div>
     <div class="card-body">
-      <div class="form-group">
-        <label class="form-label">Platform / Brand Name</label>
-        <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($reseller['name']??'') ?>">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Platform / Brand Name</label>
+          <input type="text" name="name" class="form-control" value="<?= htmlspecialchars($reseller['name']??'') ?>">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Currency Symbol</label>
+          <input type="text" name="currency" class="form-control" placeholder="e.g. Ksh, $, UGX" value="<?= htmlspecialchars($reseller['currency']??'Ksh') ?>">
+        </div>
       </div>
       <div class="form-row">
         <div class="form-group">

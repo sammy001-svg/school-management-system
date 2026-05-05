@@ -178,10 +178,11 @@ class SchoolSettingsController extends Controller {
 
     public function update(): void {
         $this->requireAuth(['School Admin','Super Admin']);
-        $this->db->execute("UPDATE tenants SET name=?,email=?,phone=?,address=?,country=?,timezone=?,academic_year=?,domain=?,primary_color=?,secondary_color=?,accent_color=? WHERE id=?",
+        $this->db->execute("UPDATE tenants SET name=?,email=?,phone=?,address=?,country=?,timezone=?,academic_year=?,currency=?,domain=?,primary_color=?,secondary_color=?,accent_color=? WHERE id=?",
             [
                 $_POST['name'], $_POST['email']??'', $_POST['phone']??'', $_POST['address']??'', 
                 $_POST['country']??'', $_POST['timezone']??'UTC', $_POST['academic_year']??'',
+                $_POST['currency']??'Ksh',
                 $_POST['domain']??null, $_POST['primary_color']??'#4F46E5', 
                 $_POST['secondary_color']??'#7C3AED', $_POST['accent_color']??'#06B6D4',
                 $this->tid
@@ -345,8 +346,8 @@ class ResellerBrandingController extends Controller {
     public function update(): void {
         $this->requireReseller();
         $rid = $_SESSION['reseller_id'] ?? 0;
-        $this->db->execute("UPDATE resellers SET name=?,primary_color=?,secondary_color=?,domain=? WHERE id=?",
-            [$_POST['name'],$_POST['primary_color']??'#4F46E5',$_POST['secondary_color']??'#7C3AED',$_POST['domain']??null,$rid]);
+        $this->db->execute("UPDATE resellers SET name=?,currency=?,primary_color=?,secondary_color=?,domain=? WHERE id=?",
+            [$_POST['name'],$_POST['currency']??'Ksh',$_POST['primary_color']??'#4F46E5',$_POST['secondary_color']??'#7C3AED',$_POST['domain']??null,$rid]);
         $_SESSION['branding']['name']            = $_POST['name'];
         $_SESSION['branding']['primary_color']   = $_POST['primary_color'];
         $_SESSION['branding']['secondary_color']  = $_POST['secondary_color'];

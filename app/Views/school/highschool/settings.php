@@ -22,6 +22,7 @@
         </select>
       </div>
       <div class="form-group"><label class="form-label">Academic Year</label><input type="text" name="academic_year" class="form-control" placeholder="2024/2025" value="<?= htmlspecialchars($tenant['academic_year']??'') ?>"></div>
+      <div class="form-group"><label class="form-label">Currency Symbol</label><input type="text" name="currency" class="form-control" placeholder="e.g. Ksh, $, UGX" value="<?= htmlspecialchars($tenant['currency']??'Ksh') ?>"></div>
     </div>
   </div></div>
 
