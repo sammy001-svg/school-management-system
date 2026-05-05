@@ -3,9 +3,9 @@
 -- ============================================================
 
 SET FOREIGN_KEY_CHECKS = 0;
-DROP DATABASE IF EXISTS school_mgmt;
-CREATE DATABASE school_mgmt CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE school_mgmt;
+-- DROP DATABASE IF EXISTS school_mgmt;
+-- CREATE DATABASE school_mgmt CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- USE school_mgmt;
 
 -- ============================================================
 -- RESELLERS

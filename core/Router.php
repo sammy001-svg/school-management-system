@@ -13,9 +13,19 @@ class Router {
     public function dispatch(): void {
         $method = $_SERVER['REQUEST_METHOD'];
         $uri    = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-        $base   = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/');
-        $path   = '/' . ltrim(substr($uri, strlen($base)), '/');
-        $path   = $path === '' ? '/' : $path;
+        
+        // Smarter base path detection
+        $scriptName = $_SERVER['SCRIPT_NAME']; // e.g., /public/index.php
+        $basePath   = dirname($scriptName);     // e.g., /public
+        
+        // If the URI doesn't start with the basePath (common in .htaccess rewrites),
+        // we should adjust the base to not include the 'public' part if it was rewritten.
+        if (strpos($uri, $basePath) !== 0) {
+            $basePath = str_replace('/public', '', $basePath);
+        }
+        
+        $path = '/' . ltrim(substr($uri, strlen($basePath)), '/');
+        $path = $path === '' ? '/' : $path;
 
         foreach ($this->routes[$method] ?? [] as $route => $handler) {
             $pattern = preg_replace('#\{[^}]+\}#', '([^/]+)', $route);
