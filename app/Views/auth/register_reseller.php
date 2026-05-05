@@ -14,7 +14,7 @@ $appName  = $cfg['name'];
 <div class="login-page">
   <div class="login-box" style="max-width:500px;">
     <div class="login-logo">
-      <div style="width:56px;height:56px;background:linear-gradient(135deg,#4F46E5,#7C3AED);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:26px;font-weight:900;color:#fff;">R</div>
+      <div style="width:56px;height:56px;background:linear-gradient(135deg,#10B981,#059669);border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:26px;font-weight:900;color:#fff;">R</div>
       <h1>Reseller Application</h1>
       <p>Partner with us and start earning</p>
     </div>

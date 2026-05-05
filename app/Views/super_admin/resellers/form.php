@@ -77,11 +77,11 @@
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Primary Color</label>
-          <input type="color" name="primary_color" class="form-control" style="height:42px;padding:4px;" value="<?= $reseller['primary_color']??'#4F46E5' ?>">
+          <input type="color" name="primary_color" class="form-control" style="height:42px;padding:4px;" value="<?= $reseller['primary_color']??'#10B981' ?>">
         </div>
         <div class="form-group">
           <label class="form-label">Secondary Color</label>
-          <input type="color" name="secondary_color" class="form-control" style="height:42px;padding:4px;" value="<?= $reseller['secondary_color']??'#7C3AED' ?>">
+          <input type="color" name="secondary_color" class="form-control" style="height:42px;padding:4px;" value="<?= $reseller['secondary_color']??'#059669' ?>">
         </div>
       </div>
     </div>

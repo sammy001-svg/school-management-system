@@ -11,8 +11,8 @@ class AuthController extends Controller {
         $host = $_SERVER['HTTP_HOST'] ?? '';
         $branding = [
             'name' => 'School Management System',
-            'primary_color' => '#4F46E5',
-            'secondary_color' => '#7C3AED',
+            'primary_color' => '#10B981',
+            'secondary_color' => '#059669',
             'logo' => null
         ];
 

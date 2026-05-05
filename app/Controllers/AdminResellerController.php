@@ -38,8 +38,8 @@ class AdminResellerController extends Controller {
         $resellerId = $this->db->insert("INSERT INTO resellers (name, slug, email, phone, domain, primary_color, secondary_color, status, commission_rate, max_schools, reseller_plan_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)", [
             $name, $slug, $email, trim($_POST['phone'] ?? ''),
             trim($_POST['domain'] ?? '') ?: null,
-            $_POST['primary_color'] ?? '#4F46E5',
-            $_POST['secondary_color'] ?? '#7C3AED',
+            $_POST['primary_color'] ?? '#10B981',
+            $_POST['secondary_color'] ?? '#059669',
             $_POST['status'] ?? 'pending',
             $_POST['commission_rate'] ?? 0,
             (int)($plan['max_schools'] ?? 5),
@@ -78,7 +78,7 @@ class AdminResellerController extends Controller {
 
         $this->db->execute("UPDATE resellers SET name=?,email=?,phone=?,domain=?,primary_color=?,secondary_color=?,status=?,commission_rate=?,max_schools=?,reseller_plan_id=? WHERE id=?", [
             $_POST['name'],trim($_POST['email']),trim($_POST['phone']??''),trim($_POST['domain']??'')?:null,
-            $_POST['primary_color']??'#4F46E5',$_POST['secondary_color']??'#7C3AED',
+            $_POST['primary_color']??'#10B981',$_POST['secondary_color']??'#059669',
             $_POST['status']??'pending',$_POST['commission_rate']??0,(int)($plan['max_schools']??5),$planId,$id
         ]);
         $this->flash('success','Reseller updated.'); $this->redirect('/admin/resellers');

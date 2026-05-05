@@ -22,7 +22,7 @@ new Chart(ctxGrowth, {
         datasets: [{
             label: 'Average Score',
             data: <?= json_encode(array_column($growth, 'avg_score')) ?>,
-            borderColor: '#4f46e5',
+            borderColor: '#10B981',
             backgroundColor: 'rgba(79, 70, 229, 0.1)',
             fill: true,
             tension: 0.3,

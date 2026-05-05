@@ -5,11 +5,11 @@
 
 /* ── CSS CUSTOM PROPERTIES ── */
 :root {
-  --primary:       #4F46E5;
-  --primary-dark:  #3730A3;
-  --primary-light: #818CF8;
-  --secondary:     #7C3AED;
-  --accent:        #06B6D4;
+  --primary:       #10B981;
+  --primary-dark:  #059669;
+  --primary-light: #34D399;
+  --secondary:     #059669;
+  --accent:        #34D399;
   --success:       #10B981;
   --warning:       #F59E0B;
   --danger:        #EF4444;

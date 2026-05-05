@@ -17,7 +17,7 @@ $secondaryColor = $branding['secondary_color'] ?? null;
 <style>
   :root {
     --primary: <?= htmlspecialchars($primaryColor) ?>;
-    --secondary: <?= htmlspecialchars($secondaryColor ?? '#7C3AED') ?>;
+    --secondary: <?= htmlspecialchars($secondaryColor ?? '#059669') ?>;
   }
 </style>
 <?php endif; ?>

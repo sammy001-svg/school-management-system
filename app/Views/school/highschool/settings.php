@@ -36,15 +36,15 @@
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Primary Color</label>
-          <input type="color" name="primary_color" class="form-control" style="height:42px;padding:4px;" value="<?= $tenant['primary_color']??'#4F46E5' ?>">
+          <input type="color" name="primary_color" class="form-control" style="height:42px;padding:4px;" value="<?= $tenant['primary_color']??'#10B981' ?>">
         </div>
         <div class="form-group">
           <label class="form-label">Secondary Color</label>
-          <input type="color" name="secondary_color" class="form-control" style="height:42px;padding:4px;" value="<?= $tenant['secondary_color']??'#7C3AED' ?>">
+          <input type="color" name="secondary_color" class="form-control" style="height:42px;padding:4px;" value="<?= $tenant['secondary_color']??'#059669' ?>">
         </div>
         <div class="form-group">
           <label class="form-label">Accent Color</label>
-          <input type="color" name="accent_color" class="form-control" style="height:42px;padding:4px;" value="<?= $tenant['accent_color']??'#06B6D4' ?>">
+          <input type="color" name="accent_color" class="form-control" style="height:42px;padding:4px;" value="<?= $tenant['accent_color']??'#34D399' ?>">
         </div>
       </div>
     </div>

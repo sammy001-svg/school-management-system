@@ -28,7 +28,7 @@
         <tr>
           <td>
             <div style="display:flex;align-items:center;gap:10px;">
-              <div class="avatar" style="background:linear-gradient(135deg,<?= htmlspecialchars($r['primary_color']??'#4F46E5') ?>,<?= htmlspecialchars($r['secondary_color']??'#7C3AED') ?>)">
+              <div class="avatar" style="background:linear-gradient(135deg,<?= htmlspecialchars($r['primary_color']??'#10B981') ?>,<?= htmlspecialchars($r['secondary_color']??'#059669') ?>)">
                 <?= strtoupper(substr($r['name'],0,1)) ?>
               </div>
               <div>
