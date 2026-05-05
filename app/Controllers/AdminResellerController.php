@@ -15,7 +15,8 @@ class AdminResellerController extends Controller {
 
     public function create(): void {
         $this->requireSuperAdmin();
-        $this->view('super_admin/resellers/form', ['pageTitle'=>'Add Reseller','panelType'=>'admin','reseller'=>null,'flash'=>$this->getFlash()]);
+        $plans = $this->db->fetchAll("SELECT * FROM reseller_plans WHERE is_active=1");
+        $this->view('super_admin/resellers/form', ['pageTitle'=>'Add Reseller','panelType'=>'admin','reseller'=>null,'resellerPlans'=>$plans,'flash'=>$this->getFlash()]);
     }
 
     public function store(): void {
@@ -23,23 +24,26 @@ class AdminResellerController extends Controller {
         $name     = trim($_POST['name'] ?? '');
         $email    = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
+        $planId   = $_POST['reseller_plan_id'] ?? null;
 
-        if (!$name || !$email || !$password) {
-            $this->flash('error', 'Name, email, and password are required.');
+        if (!$name || !$email || !$password || !$planId) {
+            $this->flash('error', 'Name, email, password, and package are required.');
             $this->redirect('/admin/resellers/create');
         }
 
+        $plan = $this->db->fetchOne("SELECT max_schools FROM reseller_plans WHERE id=?", [$planId]);
         $slug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', $name));
         
         // 1. Create the reseller
-        $resellerId = $this->db->insert("INSERT INTO resellers (name, slug, email, phone, domain, primary_color, secondary_color, status, commission_rate, max_schools) VALUES (?,?,?,?,?,?,?,?,?,?)", [
+        $resellerId = $this->db->insert("INSERT INTO resellers (name, slug, email, phone, domain, primary_color, secondary_color, status, commission_rate, max_schools, reseller_plan_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)", [
             $name, $slug, $email, trim($_POST['phone'] ?? ''),
             trim($_POST['domain'] ?? '') ?: null,
             $_POST['primary_color'] ?? '#4F46E5',
             $_POST['secondary_color'] ?? '#7C3AED',
             $_POST['status'] ?? 'pending',
             $_POST['commission_rate'] ?? 0,
-            (int)($_POST['max_schools'] ?? 5)
+            (int)($plan['max_schools'] ?? 5),
+            $planId
         ]);
 
         // 2. Create the Reseller Owner user (Role ID 2)
@@ -54,7 +58,7 @@ class AdminResellerController extends Controller {
 
     public function show(string $id): void {
         $this->requireSuperAdmin();
-        $reseller = $this->db->fetchOne("SELECT * FROM resellers WHERE id=?", [$id]);
+        $reseller = $this->db->fetchOne("SELECT r.*, rp.name AS plan_name FROM resellers r LEFT JOIN reseller_plans rp ON r.reseller_plan_id=rp.id WHERE r.id=?", [$id]);
         if (!$reseller) { $this->redirect('/admin/resellers'); }
         $schools = $this->db->fetchAll("SELECT * FROM tenants WHERE reseller_id=? ORDER BY created_at DESC", [$id]);
         $this->view('super_admin/resellers/show', ['pageTitle'=>$reseller['name'],'panelType'=>'admin','reseller'=>$reseller,'schools'=>$schools,'flash'=>$this->getFlash()]);
@@ -63,15 +67,19 @@ class AdminResellerController extends Controller {
     public function edit(string $id): void {
         $this->requireSuperAdmin();
         $reseller = $this->db->fetchOne("SELECT * FROM resellers WHERE id=?", [$id]);
-        $this->view('super_admin/resellers/form', ['pageTitle'=>'Edit Reseller','panelType'=>'admin','reseller'=>$reseller,'flash'=>$this->getFlash()]);
+        $plans = $this->db->fetchAll("SELECT * FROM reseller_plans WHERE is_active=1");
+        $this->view('super_admin/resellers/form', ['pageTitle'=>'Edit Reseller','panelType'=>'admin','reseller'=>$reseller,'resellerPlans'=>$plans,'flash'=>$this->getFlash()]);
     }
 
     public function update(string $id): void {
         $this->requireSuperAdmin();
-        $this->db->execute("UPDATE resellers SET name=?,email=?,phone=?,domain=?,primary_color=?,secondary_color=?,status=?,commission_rate=?,max_schools=? WHERE id=?", [
+        $planId = $_POST['reseller_plan_id'] ?? null;
+        $plan = $this->db->fetchOne("SELECT max_schools FROM reseller_plans WHERE id=?", [$planId]);
+
+        $this->db->execute("UPDATE resellers SET name=?,email=?,phone=?,domain=?,primary_color=?,secondary_color=?,status=?,commission_rate=?,max_schools=?,reseller_plan_id=? WHERE id=?", [
             $_POST['name'],trim($_POST['email']),trim($_POST['phone']??''),trim($_POST['domain']??'')?:null,
             $_POST['primary_color']??'#4F46E5',$_POST['secondary_color']??'#7C3AED',
-            $_POST['status']??'pending',$_POST['commission_rate']??0,(int)($_POST['max_schools']??5),$id
+            $_POST['status']??'pending',$_POST['commission_rate']??0,(int)($plan['max_schools']??5),$planId,$id
         ]);
         $this->flash('success','Reseller updated.'); $this->redirect('/admin/resellers');
     }

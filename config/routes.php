@@ -18,13 +18,21 @@ $router->post('/register/reseller', ['RegistrationController', 'registerReseller
 $router->get('/admin',                      ['AdminDashboardController', 'index']);
 $router->get('/admin/dashboard',            ['AdminDashboardController', 'index']);
 
-$router->get('/admin/resellers',            ['AdminResellerController', 'index']);
-$router->get('/admin/resellers/create',     ['AdminResellerController', 'create']);
-$router->post('/admin/resellers/store',     ['AdminResellerController', 'store']);
-$router->get('/admin/resellers/{id}',       ['AdminResellerController', 'show']);
-$router->get('/admin/resellers/{id}/edit',  ['AdminResellerController', 'edit']);
-$router->post('/admin/resellers/{id}/update', ['AdminResellerController', 'update']);
-$router->post('/admin/resellers/{id}/delete', ['AdminResellerController', 'delete']);
+// Reseller Plans (Packages for resellers)
+$router->get('/admin/reseller-plans',                ['AdminResellerPlanController', 'index']);
+$router->get('/admin/reseller-plans/create',         ['AdminResellerPlanController', 'create']);
+$router->post('/admin/reseller-plans/store',         ['AdminResellerPlanController', 'store']);
+$router->get('/admin/reseller-plans/{id}/edit',      ['AdminResellerPlanController', 'edit']);
+$router->post('/admin/reseller-plans/{id}/update',   ['AdminResellerPlanController', 'update']);
+
+// Resellers
+$router->get('/admin/resellers',                ['AdminResellerController', 'index']);
+$router->get('/admin/resellers/create',         ['AdminResellerController', 'create']);
+$router->post('/admin/resellers/store',         ['AdminResellerController', 'store']);
+$router->get('/admin/resellers/{id}',           ['AdminResellerController', 'show']);
+$router->get('/admin/resellers/{id}/edit',      ['AdminResellerController', 'edit']);
+$router->post('/admin/resellers/{id}/update',   ['AdminResellerController', 'update']);
+$router->get('/admin/resellers/{id}/delete',    ['AdminResellerController', 'delete']);
 
 $router->get('/admin/schools',              ['AdminSchoolController', 'index']);
 $router->get('/admin/schools/create',       ['AdminSchoolController', 'create']);

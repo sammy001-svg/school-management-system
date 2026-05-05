@@ -202,12 +202,12 @@ class AdminPlanController extends Controller {
     public function index(): void {
         $this->requireSuperAdmin();
         $plans = $this->db->fetchAll("SELECT * FROM plans ORDER BY price_monthly");
-        $this->view('super_admin/plans/index', ['pageTitle'=>'Subscription Plans','panelType'=>'admin','plans'=>$plans,'flash'=>$this->getFlash()]);
+        $this->view('super_admin/plans/index', ['pageTitle'=>'School Plans','panelType'=>'admin','plans'=>$plans,'flash'=>$this->getFlash()]);
     }
 
     public function create(): void {
         $this->requireSuperAdmin();
-        $this->view('super_admin/plans/form', ['pageTitle'=>'Create Plan','panelType'=>'admin','plan'=>null,'flash'=>$this->getFlash()]);
+        $this->view('super_admin/plans/form', ['pageTitle'=>'Create School Plan','panelType'=>'admin','plan'=>null,'flash'=>$this->getFlash()]);
     }
 
     public function store(): void {
@@ -215,14 +215,14 @@ class AdminPlanController extends Controller {
         $features = json_encode($_POST['features'] ?? []);
         $this->db->insert("INSERT INTO plans (name,description,max_students,max_teachers,price_monthly,price_yearly,billing_owner,features) VALUES (?,?,?,?,?,?,?,?)",
             [$_POST['name'],$_POST['description']??'',(int)$_POST['max_students'],(int)$_POST['max_teachers'],(float)$_POST['price_monthly'],(float)$_POST['price_yearly'],$_POST['billing_owner']??'platform',$features]);
-        $this->flash('success','Plan created.'); $this->redirect('/admin/plans');
+        $this->flash('success','School plan created.'); $this->redirect('/admin/plans');
     }
 
     public function edit(string $id): void {
         $this->requireSuperAdmin();
         $plan = $this->db->fetchOne("SELECT * FROM plans WHERE id=?", [$id]);
         $plan['features'] = json_decode($plan['features'] ?? '[]', true);
-        $this->view('super_admin/plans/form', ['pageTitle'=>'Edit Plan','panelType'=>'admin','plan'=>$plan,'flash'=>$this->getFlash()]);
+        $this->view('super_admin/plans/form', ['pageTitle'=>'Edit School Plan','panelType'=>'admin','plan'=>$plan,'flash'=>$this->getFlash()]);
     }
 
     public function update(string $id): void {
@@ -230,7 +230,40 @@ class AdminPlanController extends Controller {
         $features = json_encode($_POST['features'] ?? []);
         $this->db->execute("UPDATE plans SET name=?,description=?,max_students=?,max_teachers=?,price_monthly=?,price_yearly=?,billing_owner=?,features=? WHERE id=?",
             [$_POST['name'],$_POST['description']??'',(int)$_POST['max_students'],(int)$_POST['max_teachers'],(float)$_POST['price_monthly'],(float)$_POST['price_yearly'],$_POST['billing_owner']??'platform',$features,$id]);
-        $this->flash('success','Plan updated.'); $this->redirect('/admin/plans');
+        $this->flash('success','School plan updated.'); $this->redirect('/admin/plans');
+    }
+}
+
+class AdminResellerPlanController extends Controller {
+    public function index(): void {
+        $this->requireSuperAdmin();
+        $plans = $this->db->fetchAll("SELECT * FROM reseller_plans ORDER BY price");
+        $this->view('super_admin/reseller_plans/index', ['pageTitle'=>'Reseller Packages','panelType'=>'admin','plans'=>$plans,'flash'=>$this->getFlash()]);
+    }
+
+    public function create(): void {
+        $this->requireSuperAdmin();
+        $this->view('super_admin/reseller_plans/form', ['pageTitle'=>'Create Reseller Package','panelType'=>'admin','plan'=>null,'flash'=>$this->getFlash()]);
+    }
+
+    public function store(): void {
+        $this->requireSuperAdmin();
+        $this->db->insert("INSERT INTO reseller_plans (name,description,price,max_schools) VALUES (?,?,?,?)",
+            [$_POST['name'],$_POST['description']??'',(float)$_POST['price'],(int)$_POST['max_schools']]);
+        $this->flash('success','Reseller package created.'); $this->redirect('/admin/reseller-plans');
+    }
+
+    public function edit(string $id): void {
+        $this->requireSuperAdmin();
+        $plan = $this->db->fetchOne("SELECT * FROM reseller_plans WHERE id=?", [$id]);
+        $this->view('super_admin/reseller_plans/form', ['pageTitle'=>'Edit Reseller Package','panelType'=>'admin','plan'=>$plan,'flash'=>$this->getFlash()]);
+    }
+
+    public function update(string $id): void {
+        $this->requireSuperAdmin();
+        $this->db->execute("UPDATE reseller_plans SET name=?,description=?,price=?,max_schools=? WHERE id=?",
+            [$_POST['name'],$_POST['description']??'',(float)$_POST['price'],(int)$_POST['max_schools'],$id]);
+        $this->flash('success','Reseller package updated.'); $this->redirect('/admin/reseller-plans');
     }
 }
 
