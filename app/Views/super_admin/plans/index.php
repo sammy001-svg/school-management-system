@@ -1,22 +1,67 @@
 <?php require ROOT_DIR . '/app/Views/layouts/header.php'; ?>
-<div class="page-header"><div class="page-header-title">Subscription Plans</div><a href="<?= $cfg['url'] ?>/admin/plans/create" class="btn btn-primary">+ Create Plan</a></div>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
-  <?php foreach($plans as $p): ?>
-  <div class="card" style="position:relative;">
-    <div class="card-body">
-      <div class="fw-600" style="font-size:16px;margin-bottom:4px"><?= htmlspecialchars($p['name']) ?></div>
-      <div style="color:var(--text-muted);font-size:13px;margin-bottom:12px"><?= htmlspecialchars($p['description']??'') ?></div>
-      <div style="font-size:28px;font-weight:800;color:var(--primary)">$<?= number_format($p['price_monthly'],2) ?><span style="font-size:14px;font-weight:400;color:var(--text-muted)">/mo</span></div>
-      <div style="margin-top:12px;font-size:13px;color:var(--text-light)">
-        <div>👥 Up to <?= number_format($p['max_students']) ?> students</div>
-        <div>👨‍🏫 Up to <?= number_format($p['max_teachers']) ?> teachers</div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:16px;">
-        <a href="<?= $cfg['url'] ?>/admin/plans/<?= $p['id'] ?>/edit" class="btn btn-sm btn-secondary">Edit</a>
-        <span class="badge badge-<?= $p['is_active']?'success':'danger' ?>"><?= $p['is_active']?'Active':'Inactive' ?></span>
-      </div>
-    </div>
+
+<div class="page-header">
+  <div class="page-header-title">Subscription Plans</div>
+  <div class="page-header-actions">
+    <a href="<?= $cfg['url'] ?>/admin/plans/create" class="btn btn-primary">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:18px;height:18px;"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+      Create New Plan
+    </a>
   </div>
-  <?php endforeach; ?>
 </div>
+
+<div class="card">
+  <div class="card-body" style="padding:0;">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Plan Name</th>
+          <th>Owner</th>
+          <th>Monthly Price</th>
+          <th>Yearly Price</th>
+          <th>Limits</th>
+          <th>Status</th>
+          <th style="text-align:right;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach($plans as $p): ?>
+        <tr>
+          <td>
+            <div style="font-weight:600;color:var(--text-dark);"><?= htmlspecialchars($p['name']) ?></div>
+            <div style="font-size:12px;color:var(--text-muted);"><?= htmlspecialchars($p['description'] ?? '') ?></div>
+          </td>
+          <td>
+            <span class="badge" style="background:<?= $p['billing_owner'] === 'platform' ? '#E0E7FF;color:#4338CA;' : '#FEF3C7;color:#92400E;' ?>">
+              <?= ucfirst($p['billing_owner']) ?>
+            </span>
+          </td>
+          <td>$<?= number_format($p['price_monthly'], 2) ?></td>
+          <td>$<?= number_format($p['price_yearly'], 2) ?></td>
+          <td>
+            <div style="font-size:12px;">
+              Students: <strong><?= $p['max_students'] ?></strong><br>
+              Teachers: <strong><?= $p['max_teachers'] ?></strong>
+            </div>
+          </td>
+          <td>
+            <span class="badge" style="background:<?= $p['is_active'] ? '#D1FAE5;color:#065F46;' : '#FEE2E2;color:#991B1B;' ?>">
+              <?= $p['is_active'] ? 'Active' : 'Inactive' ?>
+            </span>
+          </td>
+          <td style="text-align:right;">
+            <a href="<?= $cfg['url'] ?>/admin/plans/<?= $p['id'] ?>/edit" class="btn btn-secondary btn-sm">Edit</a>
+          </td>
+        </tr>
+        <?php endforeach; ?>
+        <?php if (empty($plans)): ?>
+        <tr>
+          <td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted);">No plans found. Create your first plan to get started.</td>
+        </tr>
+        <?php endif; ?>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <?php require ROOT_DIR . '/app/Views/layouts/footer.php'; ?>
