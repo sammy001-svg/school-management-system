@@ -30,7 +30,11 @@
   <nav class="sidebar-nav">
     <a href="<?= $base ?>/admin/plans">
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-      Subscription Plans
+      School Plans
+    </a>
+    <a href="<?= $base ?>/admin/reseller-plans">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.151V16.849c0 .896-.593 1.688-1.449 1.957l-6 1.886a2.25 2.25 0 0 1-1.602 0l-6-1.886C4.343 18.537 3.75 17.745 3.75 16.85V7.151c0-.896.593-1.688 1.449-1.957l6-1.886a2.25 2.25 0 0 1 1.602 0l6 1.886c.856.27 1.449 1.061 1.449 1.957Z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.151 12 9.75 3.75 7.151M12 9.75v10.5" /></svg>
+      Reseller Packages
     </a>
   </nav>
 </div>
