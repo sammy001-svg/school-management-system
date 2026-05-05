@@ -63,4 +63,30 @@ class FinanceController extends Controller {
         $this->db->execute("UPDATE invoices SET amount_paid=?, status=? WHERE id=?",[$paid,$newStatus,$invoiceId]);
         $this->flash('success','Payment recorded.'); $this->redirect('/school/finance/invoices');
     }
+
+    public function feeManagement(): void {
+        $this->requireAuth(['School Admin','Accountant','Super Admin']);
+        $categories = $this->db->fetchAll("SELECT * FROM fee_categories WHERE tenant_id=?", [$this->tid]);
+        $this->view('school/highschool/finance/fee_management', ['pageTitle'=>'Fee Management','panelType'=>'school','categories'=>$categories,'flash'=>$this->getFlash()]);
+    }
+
+    public function accountsReceivable(): void {
+        $this->requireAuth(['School Admin','Accountant','Super Admin']);
+        $this->view('school/highschool/finance/accounts_receivable', ['pageTitle'=>'Accounts Receivable','panelType'=>'school','flash'=>$this->getFlash()]);
+    }
+
+    public function budgeting(): void {
+        $this->requireAuth(['School Admin','Accountant','Super Admin']);
+        $this->view('school/highschool/finance/budgeting', ['pageTitle'=>'Budgeting & Planning','panelType'=>'school','flash'=>$this->getFlash()]);
+    }
+
+    public function financialReports(): void {
+        $this->requireAuth(['School Admin','Accountant','Super Admin']);
+        $this->view('school/highschool/finance/reports', ['pageTitle'=>'Financial Reporting','panelType'=>'school','flash'=>$this->getFlash()]);
+    }
+
+    public function communication(): void {
+        $this->requireAuth(['School Admin','Accountant','Super Admin']);
+        $this->view('school/highschool/finance/communication', ['pageTitle'=>'Finance Communication','panelType'=>'school','flash'=>$this->getFlash()]);
+    }
 }

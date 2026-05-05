@@ -108,6 +108,11 @@ $router->get('/school/finance/invoices/create', ['FinanceController', 'createInv
 $router->post('/school/finance/invoices/store', ['FinanceController', 'storeInvoice']);
 $router->get('/school/finance/payments',    ['FinanceController', 'payments']);
 $router->post('/school/finance/payments/store', ['FinanceController', 'storePayment']);
+$router->get('/school/finance/fee-management', ['FinanceController', 'feeManagement']);
+$router->get('/school/finance/accounts-receivable', ['FinanceController', 'accountsReceivable']);
+$router->get('/school/finance/budgeting', ['FinanceController', 'budgeting']);
+$router->get('/school/finance/reports', ['FinanceController', 'financialReports']);
+$router->get('/school/finance/communication', ['FinanceController', 'communication']);
 
 $router->get('/school/parents',             ['ParentController', 'index']);
 $router->get('/school/parents/create',      ['ParentController', 'create']);
