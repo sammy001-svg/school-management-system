@@ -41,6 +41,18 @@ $appName  = $cfg['name'];
         <input type="password" name="password" class="form-control" placeholder="••••••••" required>
       </div>
 
+      <div class="form-group">
+        <label class="form-label">Select Package *</label>
+        <select name="reseller_plan_id" class="form-control" required>
+          <option value="">-- Choose a Reseller Package --</option>
+          <?php foreach($plans as $p): ?>
+            <option value="<?= $p['id'] ?>">
+              <?= htmlspecialchars($p['name']) ?> - Ksh <?= number_format($p['price'], 2) ?> (<?= $p['max_schools'] ?> Schools)
+            </option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+
       <div style="background:#f9fafb;padding:12px;border-radius:8px;margin-bottom:16px;font-size:13px;color:#666;">
         By submitting this form, you apply to become an authorized reseller. Your account will be set to <strong>pending</strong> status until reviewed by our administration team.
       </div>

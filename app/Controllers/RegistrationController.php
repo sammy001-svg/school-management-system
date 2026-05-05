@@ -13,8 +13,10 @@ class RegistrationController extends Controller {
     }
 
     public function resellerPage(): void {
+        $plans = $this->db->fetchAll("SELECT id, name, description, price, max_schools FROM reseller_plans WHERE is_active = 1");
         $this->view('auth/register_reseller', [
             'pageTitle' => 'Become a Reseller',
+            'plans' => $plans,
             'flash' => $this->getFlash()
         ]);
     }
@@ -64,9 +66,10 @@ class RegistrationController extends Controller {
         $name     = trim($_POST['name'] ?? '');
         $email    = trim($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
+        $planId   = $_POST['reseller_plan_id'] ?? null;
 
-        if (!$name || !$email || !$password) {
-            $this->flash('error', 'All fields are required.');
+        if (!$name || !$email || !$password || !$planId) {
+            $this->flash('error', 'All fields and a package selection are required.');
             $this->redirect('/register/reseller');
         }
 
@@ -77,12 +80,13 @@ class RegistrationController extends Controller {
             $this->redirect('/register/reseller');
         }
 
+        $plan = $this->db->fetchOne("SELECT max_schools FROM reseller_plans WHERE id=?", [$planId]);
         $slug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', $name));
         
         try {
             // 1. Create the reseller
-            $resellerId = $this->db->insert("INSERT INTO resellers (name, slug, email, status) VALUES (?,?,?,?)", [
-                $name, $slug, $email, 'pending'
+            $resellerId = $this->db->insert("INSERT INTO resellers (name, slug, email, status, reseller_plan_id, max_schools) VALUES (?,?,?,?,?,?)", [
+                $name, $slug, $email, 'pending', $planId, (int)($plan['max_schools'] ?? 5)
             ]);
 
             // 2. Create the Reseller Owner user (Role ID 2)
