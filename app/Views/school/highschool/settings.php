@@ -24,6 +24,31 @@
       <div class="form-group"><label class="form-label">Academic Year</label><input type="text" name="academic_year" class="form-control" placeholder="2024/2025" value="<?= htmlspecialchars($tenant['academic_year']??'') ?>"></div>
     </div>
   </div></div>
+
+  <div class="card mt-16">
+    <div class="card-header"><div class="card-title">White-Labeling & Domain</div></div>
+    <div class="card-body">
+      <div class="form-group">
+        <label class="form-label">Custom Domain</label>
+        <input type="text" name="domain" class="form-control" placeholder="portal.your-school.com" value="<?= htmlspecialchars($tenant['domain']??'') ?>">
+        <small style="color:#666;">Point your CNAME record to our system IP.</small>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Primary Color</label>
+          <input type="color" name="primary_color" class="form-control" style="height:42px;padding:4px;" value="<?= $tenant['primary_color']??'#4F46E5' ?>">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Secondary Color</label>
+          <input type="color" name="secondary_color" class="form-control" style="height:42px;padding:4px;" value="<?= $tenant['secondary_color']??'#7C3AED' ?>">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Accent Color</label>
+          <input type="color" name="accent_color" class="form-control" style="height:42px;padding:4px;" value="<?= $tenant['accent_color']??'#06B6D4' ?>">
+        </div>
+      </div>
+    </div>
+  </div>
   <div style="margin-top:20px;"><button type="submit" class="btn btn-primary">Save Settings</button></div>
 </form>
 </div>

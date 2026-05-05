@@ -8,13 +8,32 @@ class AuthController extends Controller {
             $this->redirectByRole();
         }
 
-        // Load branding if domain is matched (simplified for now)
+        $host = $_SERVER['HTTP_HOST'] ?? '';
         $branding = [
             'name' => 'School Management System',
             'primary_color' => '#4F46E5',
             'secondary_color' => '#7C3AED',
             'logo' => null
         ];
+
+        // 1. Check if the current domain matches a custom domain in tenants
+        $tenant = $this->db->fetchOne("SELECT name, primary_color, secondary_color, logo FROM tenants WHERE domain = ? AND status = 'active' LIMIT 1", [$host]);
+        
+        if ($tenant) {
+            $branding['name'] = $tenant['name'];
+            $branding['primary_color'] = $tenant['primary_color'];
+            $branding['secondary_color'] = $tenant['secondary_color'];
+            $branding['logo'] = $tenant['logo'];
+        } else {
+            // 2. Check if it matches a reseller domain
+            $reseller = $this->db->fetchOne("SELECT name, primary_color, secondary_color, logo FROM resellers WHERE domain = ? AND status = 'active' LIMIT 1", [$host]);
+            if ($reseller) {
+                $branding['name'] = $reseller['name'];
+                $branding['primary_color'] = $reseller['primary_color'];
+                $branding['secondary_color'] = $reseller['secondary_color'];
+                $branding['logo'] = $reseller['logo'];
+            }
+        }
 
         $this->view('auth/login', [
             'pageTitle' => 'Login',

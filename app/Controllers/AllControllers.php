@@ -178,9 +178,23 @@ class SchoolSettingsController extends Controller {
 
     public function update(): void {
         $this->requireAuth(['School Admin','Super Admin']);
-        $this->db->execute("UPDATE tenants SET name=?,email=?,phone=?,address=?,country=?,timezone=?,academic_year=? WHERE id=?",
-            [$_POST['name'],$_POST['email']??'',$_POST['phone']??'',$_POST['address']??'',$_POST['country']??'',$_POST['timezone']??'UTC',$_POST['academic_year']??'',$this->tid]);
-        $this->flash('success','Settings updated.'); $this->redirect('/school/settings');
+        $this->db->execute("UPDATE tenants SET name=?,email=?,phone=?,address=?,country=?,timezone=?,academic_year=?,domain=?,primary_color=?,secondary_color=?,accent_color=? WHERE id=?",
+            [
+                $_POST['name'], $_POST['email']??'', $_POST['phone']??'', $_POST['address']??'', 
+                $_POST['country']??'', $_POST['timezone']??'UTC', $_POST['academic_year']??'',
+                $_POST['domain']??null, $_POST['primary_color']??'#4F46E5', 
+                $_POST['secondary_color']??'#7C3AED', $_POST['accent_color']??'#06B6D4',
+                $this->tid
+            ]);
+        
+        // Update session branding if it's the current school
+        if ($_SESSION['tenant_id'] == $this->tid) {
+            $_SESSION['branding']['name']            = $_POST['name'];
+            $_SESSION['branding']['primary_color']   = $_POST['primary_color'];
+            $_SESSION['branding']['secondary_color']  = $_POST['secondary_color'];
+        }
+
+        $this->flash('success','Settings and branding updated.'); $this->redirect('/school/settings');
     }
 }
 
